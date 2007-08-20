@@ -54,8 +54,8 @@ Source3:	embedspu.sh
 Buildroot:	%{_tmppath}/%{name}-%{version}-root
 %if "%{name}" == "binutils"
 Requires:	%{lib_name} = %{version}-%{release}
-Requires(post):	/sbin/install-info
-Requires(preun):/sbin/install-info
+Requires(post):	info-install
+Requires(preun):info-install
 %endif
 Conflicts:	gcc-c++ < 3.2.3-1mdk
 BuildRequires:	autoconf automake bison flex gcc gettext texinfo
