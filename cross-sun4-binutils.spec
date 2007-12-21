@@ -51,6 +51,7 @@ Source0:	http://ftp.kernel.org/pub/linux/devel/binutils/binutils-%{version}.tar.
 Source1:	build_cross_binutils.sh
 #Source2:	spu_ovl.o
 Source3:	embedspu.sh
+Buildroot:	%{_tmppath}/%{name}-%{version}-root
 %if "%{name}" == "binutils"
 Requires:	%{lib_name} = %{version}-%{release}
 Requires(post):	info-install
