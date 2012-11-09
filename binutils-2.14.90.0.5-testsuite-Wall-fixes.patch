@@ -1,0 +1,43 @@
+2003-08-06  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
+
+	* ld/testsuite/ld-elfcomm/common1b.c (dummy1): Mark it used.
+
+2003-02-15  Gwenole Beauchesne  <gbeauchesne@mandrakesoft.com>
+
+	* ld/testsuite/ld-shared/main.c (main): -Wall fixes.
+	
+--- binutils-2.14.90.0.5/ld/testsuite/ld-shared/main.c.testsuite-Wall-fixes	2001-06-09 09:13:02.000000000 +0200
++++ binutils-2.14.90.0.5/ld/testsuite/ld-shared/main.c	2003-08-06 10:18:16.000000000 +0200
+@@ -38,8 +38,6 @@ shlib_overriddencall2 ()
+ int
+ main ()
+ {
+-  int (*p) ();
+-
+   printf ("mainvar == %d\n", mainvar);
+   printf ("overriddenvar == %d\n", overriddenvar);
+   printf ("shlibvar1 == %d\n", shlibvar1);
+@@ -62,6 +60,8 @@ main ()
+   printf ("shlib_checkfunptr2 (main_called) == %d\n",
+ 	  shlib_checkfunptr2 (main_called));
+ #endif
++ {
++  int (*p) ();
+   p = shlib_getfunptr1 ();
+   printf ("shlib_getfunptr1 () ");
+   if (p == shlib_shlibvar1)
+@@ -78,6 +78,7 @@ main ()
+     printf ("!=");
+   printf (" main_called\n");
+ #endif
++ }
+ #endif
+   printf ("shlib_check () == %d\n", shlib_check ());
+   return 0;
+--- binutils-2.14.90.0.5/ld/testsuite/ld-elfcomm/common1b.c.testsuite-Wall-fixes	2003-05-05 23:46:50.000000000 +0200
++++ binutils-2.14.90.0.5/ld/testsuite/ld-elfcomm/common1b.c	2003-08-06 10:23:04.000000000 +0200
+@@ -1,3 +1,3 @@
+-static char dummy1 = 'X';
++static char dummy1 __attribute__((used)) = 'X';
+ char foo1 [] = "Aligned at odd byte.";
+ char foo2 [4];

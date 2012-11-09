@@ -1,0 +1,128 @@
+--- binutils-2.16.91.0.7/ltconfig.libtool	2005-07-20 15:27:26.000000000 -0400
++++ binutils-2.16.91.0.7/ltconfig	2006-07-20 10:58:12.000000000 -0400
+@@ -1261,6 +1261,25 @@ linux-gnu*)
+   # before this can be enabled.
+   hardcode_into_libs=yes
+ 
++  # Test if the compiler is 64bit
++  echo 'int i;' > conftest.$ac_ext
++  lt_cv_cc_64bit_output=no
++  if $CC -c conftest.$ac_ext -o conftest.$ac_objext; then
++    case `/usr/bin/file conftest.$ac_objext` in
++    *"ELF 64"*)
++      lt_cv_cc_64bit_output=yes
++      ;;
++    esac
++  fi
++  rm -rf conftest*
++  
++  case $host_cpu:$lt_cv_cc_64bit_output in
++  powerpc64:yes | s390x:yes | sparc64:yes | x86_64:yes)
++    sys_lib_dlsearch_path_spec="/lib64 /usr/lib64 /usr/X11R6/lib64"
++    sys_lib_search_path_spec="/lib64 /usr/lib64 /usr/local/lib64 /usr/X11R6/lib64"
++    ;;
++  esac
++
+   # We used to test for /lib/ld.so.1 and disable shared libraries on
+   # powerpc, because MkLinux only supported shared libraries with the
+   # GNU dynamic linker.  Since this was broken with cross compilers,
+--- binutils-2.14.90.0.4/ltmain.sh.libtool-relink	2002-03-22 17:06:16.000000000 -0500
++++ binutils-2.14.90.0.4/ltmain.sh	2003-07-08 07:18:42.000000000 -0400
+@@ -829,6 +829,7 @@ EOF
+     linker_flags=
+     dllsearchpath=
+     lib_search_path=`pwd`
++    inst_prefix_dir=
+ 
+     avoid_version=no
+     dlfiles=
+@@ -961,6 +962,11 @@ EOF
+ 	  prev=
+ 	  continue
+ 	  ;;
++        inst_prefix)
++	  inst_prefix_dir="$arg"
++	  prev=
++	  continue
++	  ;;
+ 	release)
+ 	  release="-$arg"
+ 	  prev=
+@@ -1169,6 +1175,11 @@ EOF
+ 	continue
+ 	;;
+ 
++      -inst-prefix-dir)
++	prev=inst_prefix
++	continue
++	;;
++
+       # The native IRIX linker understands -LANG:*, -LIST:* and -LNO:*
+       # so, if we see these flags be careful not to treat them like -L
+       -L[A-Z][A-Z]*:*)
+@@ -2176,6 +2187,7 @@ EOF
+ 
+ 	  if test $linkmode = prog || test "$mode" = relink; then
+ 	    add_shlibpath=
++	    add_prefix_dir=
+ 	    add_dir=
+ 	    add=
+ 	    # Finalize command for both is simple: just hardcode it.
+@@ -2196,10 +2208,23 @@ EOF
+ 	      add="-l$name"
+ 	    fi
+ 
++
++	    if test -n "$inst_prefix_dir"; then
++	      case "$libdir" in
++	      [\\/]*)
++		add_prefix_dir="-L$inst_prefix_dir$libdir"
++		;;
++	      esac
++	    fi
++
++	    # add_prefix_dir must be appended instead, otherwise it can
++	    # possibly be overrided by any hardcoded -L/... path in deplibs
+ 	    if test $linkmode = prog; then
++	      test -n "$add_prefix_dir" && finalize_deplibs="$finalize_deplibs $add_prefix_dir"
+ 	      test -n "$add_dir" && finalize_deplibs="$add_dir $finalize_deplibs"
+ 	      test -n "$add" && finalize_deplibs="$add $finalize_deplibs"
+ 	    else
++	      test -n "$add_prefix_dir" && deplibs="$deplibs $add_prefix_dir"
+ 	      test -n "$add_dir" && deplibs="$add_dir $deplibs"
+ 	      test -n "$add" && deplibs="$add $deplibs"
+ 	    fi
+@@ -4312,7 +4337,7 @@ fi\
+       for tag in $taglist; do
+         tagopts="$tagopts --tag $tag"
+       done
+-      relink_command="(cd `pwd`; $SHELL $0$tagopts --mode=relink $libtool_args)"
++      relink_command="(cd `pwd`; $SHELL $0$tagopts --mode=relink $libtool_args @inst_prefix_dir@)"
+       relink_command=`$echo "X$relink_command" | $Xsed -e "$sed_quote_subst"`
+ 
+       # Only create the output if not a dry run.
+@@ -4613,6 +4638,24 @@ relink_command=\"$relink_command\""
+ 	dir="$dir$objdir"
+ 
+ 	if test -n "$relink_command"; then
++	  # Determine the prefix the user has applied to our future dir.
++	  inst_prefix_dir=`$echo "$destdir" | sed "s%$libdir\$%%"`
++
++	  # Don't allow the user to place us outside of our expected
++	  # location b/c this prevents finding dependent libraries that
++	  # are installed to the same prefix.
++	  if test "$inst_prefix_dir" = "$destdir"; then
++	    $echo "$modename: error: cannot install \`$file' to a directory not ending in $libdir" 1>&2
++	    exit 1
++	  fi
++
++	  if test -n "$inst_prefix_dir"; then
++	    # Stick the inst_prefix_dir data into the link command.
++	    relink_command=`$echo "$relink_command" | sed "s%@inst_prefix_dir@%-inst-prefix-dir $inst_prefix_dir%"`
++	  else
++	    relink_command=`$echo "$relink_command" | sed "s%@inst_prefix_dir@%%"`
++	  fi
++
+ 	  $echo "$modename: warning: relinking \`$file'" 1>&2
+ 	  $show "$relink_command"
+ 	  if $run eval "$relink_command"; then :

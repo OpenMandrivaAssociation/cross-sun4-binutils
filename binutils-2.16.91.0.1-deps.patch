@@ -1,0 +1,22 @@
+--- binutils-2.16.91.0.1/bfd/Makefile.am.deps	2005-06-22 22:53:34.000000000 +0200
++++ binutils-2.16.91.0.1/bfd/Makefile.am	2005-07-07 11:07:58.746566244 +0200
+@@ -651,7 +651,7 @@ po/BLD-POTFILES.in: @MAINT@ Makefile $(B
+ 	  | LC_COLLATE= sort > tmp.bld \
+ 	  && mv tmp.bld $(srcdir)/po/BLD-POTFILES.in
+ 
+-all diststuff: info
++diststuff: info
+ 
+ # Various kinds of .o files to put in libbfd.a:
+ # BFD_BACKENDS	Routines the configured targets need.
+--- binutils-2.16.91.0.1/bfd/Makefile.in.deps	2005-06-22 22:53:34.000000000 +0200
++++ binutils-2.16.91.0.1/bfd/Makefile.in	2005-07-07 11:07:51.801358237 +0200
+@@ -1257,7 +1257,7 @@ po/BLD-POTFILES.in: @MAINT@ Makefile $(B
+ 	  | LC_COLLATE= sort > tmp.bld \
+ 	  && mv tmp.bld $(srcdir)/po/BLD-POTFILES.in
+ 
+-all diststuff: info
++diststuff: info
+ 
+ stamp-ofiles: Makefile
+ 	rm -f tofiles

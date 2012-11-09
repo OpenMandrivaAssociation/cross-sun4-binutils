@@ -1,0 +1,4 @@
+sources:
+  "binutils-2.17.50.0.9.tar.bz2:"	b83c75911521def3cc0ef6dbd562f6346ea95aa6
+  "build_cross_binutils.sh:"	9ef38bce0a25eecc660af06b70a36774053ba505
+  "embedspu.sh:"	ecabad21b0ad614cf0266b7bb1643f4e07d78c77
